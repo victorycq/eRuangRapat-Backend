@@ -1,0 +1,18 @@
+yang di edit: 
+Lumen : -membuat route baru => $router->post('/detailtransaksi', 'TransaksiController@getdetailstatus');
+	-membuat function getAll di controller (belum)
+
+frontend : -membuat func baru pada e-ruang-rapat.service
+	   -tambahan coding pada home.component.ts dan home.component.html
+	   -tambahan coding pada app.component.ts pada bagian logout dan penambahan global variabel : "status='';
+	   -tambahan func ngOnInit pada app.component.ts
+	   -tambahan ngif pada app.components.html
+	   -tambahan coding pada login.components.ts pada bagian func authentication => window.location.reload()
+
+	*tambahan pada AppModule.ts => NbCalendarModule, NbWindowModule
+	*tambahan pada bagian imports => NbWindowModule.forRoot(), NbCalendarModule
+
+yg belum :
+
+1. desain keseluruhan
+2. dua detail rapat pada tanggal yang sama di calender
