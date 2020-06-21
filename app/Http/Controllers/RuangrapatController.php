@@ -20,6 +20,8 @@ class RuangrapatController extends Controller
             }
             else{
                 $ruangan = Ruang_Rapat::join('master_skpd', 'master_skpd.kode_skpd', '=', 'ruang_rapat.opd')
+                //AFTER FIX : sebelumnya gk ada select
+                ->select("ruang_rapat.id", "ruang_rapat.nama", "ruang_rapat.lokasi", "ruang_rapat.kapasitas", "ruang_rapat.koor_x", "ruang_rapat.koor_y", "ruang_rapat.contact", "master_skpd.nama_skpd")
                 ->get();
                  return response()->json(['ruangan'=>$ruangan]);
             }

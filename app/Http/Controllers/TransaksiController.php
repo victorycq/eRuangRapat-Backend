@@ -99,10 +99,10 @@ class TransaksiController extends Controller
                 return response()->json(['message' => $user['message']], $user['code']);
             }
             else{
-                $rapat = Transaksi::
-                join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
-                ->join('master_skpd', 'master_skpd.kode_skpd', "=", "transaksi.opd_peminjam")
-                ->select('transaksi.id','transaksi.id_notulen', 'transaksi.judul_rapat', 'transaksi.status', 'start', 'finish', 'ruang_rapat.nama', 'transaksi.start', 'transaksi.finish','master_skpd.nama_skpd',)
+                $rapat = Transaksi::orderBy('id', 'DESC')
+                // ->join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
+                // ->join('master_skpd', 'master_skpd.kode_skpd', "=", "transaksi.opd_peminjam")
+                // ->select('transaksi.id','transaksi.id_notulen', 'transaksi.judul_rapat', 'transaksi.status', 'start', 'finish', 'ruang_rapat.nama', 'transaksi.start', 'transaksi.finish','master_skpd.nama_skpd')
                 ->get();
 
                  return response()->json(['rapat'=>$rapat]);
@@ -197,15 +197,21 @@ class TransaksiController extends Controller
                 return response()->json(['message' => $user['message']], $user['code']);
             }
             else{
-                // $detailRapat = Transaksi::join('notulen', 'notulen.id', '=', 'transaksi.id_notulen')
-                // ->where('transaksi.id', '=', $request->get('idRapat'))
-                // ->firstOrFail();
-                $detailRapat = Notulen::where('id', '=', $request->get('idNotulen'))
+                $detailRapat = Transaksi::join('notulen', 'notulen.id', '=', 'transaksi.id_notulen')
+                ->where('transaksi.id', '=', $request->get('idTransaksi'))
                 ->firstOrFail();
-                $acara = Acara::where('id_notulen', '=',$request->get('idNotulen'))->get();
-                $kegiatan = Kegiatan::where('id_notulen', '=',$request->get('idNotulen'))->get();
-                $filePendukung = File_Pendukung::where('notulen_id', '=', $request->get('idNotulen'))->get();
-                $pesertaRapat = Peserta_Rapat::where('id_notulen', '=', $request->get('idNotulen'))->get();
+                // $detailRapat = Notulen::where('id', '=', $request->get('idNotulen'))
+                // ->firstOrFail();
+                // $detailRapat = Transaksi::join('notulen', function($join)
+                // {
+                //     $join->on('transaksi.id_notulen', '=', 'notulen.id')
+                //          ->where('transaksi.id', '=',  $request->get('idTransaksi'));
+                // })->firstOrFail();
+
+                $acara = Acara::where('id_notulen', '=',$detailRapat['id_notulen'])->get();
+                $kegiatan = Kegiatan::where('id_notulen', '=',$detailRapat['id_notulen'])->get();
+                $filePendukung = File_Pendukung::where('notulen_id', '=', $detailRapat['id_notulen'])->get();
+                $pesertaRapat = Peserta_Rapat::where('id_notulen', '=', $detailRapat['id_notulen'])->get();
                  return response()->json(['detailRapat'=>$detailRapat, 'acara'=>$acara, 'kegiatan' => $kegiatan, 'filePendukung' => $filePendukung, 'pesertaRapat'=>$pesertaRapat]);
             }
         } catch (\Exception $ex) {
@@ -221,12 +227,14 @@ class TransaksiController extends Controller
                 return response()->json(['message' => $user['message']], $user['code']);
             }
             else{
-                $permohonan = Transaksi::join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
+                $permohonan = Transaksi::
+                join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
                 ->join('master_skpd', 'master_skpd.kode_skpd', "=", "transaksi.opd_peminjam")
                 ->join('notulen', 'transaksi.id_notulen', '=', 'notulen.id')
                 ->select('nip_pemesan', 'transaksi.judul_rapat', 'notulen.nip_notulen', 'notulen.nama_notulen', 'transaksi.nip_pimpinan', 'transaksi.pimpinan_rapat', 'transaksi.status', 'start', 'finish', 'ruang_rapat.nama', 'transaksi.start', 'transaksi.finish','master_skpd.nama_skpd',)
                 ->where('transaksi.id', '=', $request->get('idPermohonan'))
                 ->firstOrFail();
+                // $fileTransaksi = "";
                 $fileTransaksi = File_Transaksi::where('transaksi_id', '=', $request->get('idPermohonan'))->get();
                  return response()->json(['permohonan'=>$permohonan, 'fileTransaksi'=>$fileTransaksi]);
             }

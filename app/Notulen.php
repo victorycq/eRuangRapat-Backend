@@ -13,6 +13,8 @@ class Notulen extends Model
     }
     public function transaksi()
     {
-        return $this->hasMany('App\Model\Transaksi', 'id_notulen');
+        // return $this->hasMany('App\Model\Transaksi', 'id_notulen');
+        return $this->hasMany('App\Model\Transaksi');
+
     }
 }

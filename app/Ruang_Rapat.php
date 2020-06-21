@@ -16,4 +16,9 @@ class Ruang_Rapat extends Model
     {
         return $this->hasOne('App\Model\FasilitasRapat');
     }
+    
+    // public function masterskpd()
+    // {
+    //     return $this->belongsTo('App\Model\Master_Skpd', 'opd');
+    // }
 }
