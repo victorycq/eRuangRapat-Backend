@@ -13,6 +13,9 @@ use \Illuminate\Http\Request;
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+$router->get('/key', function() {
+    return str_random(32);
+});
 $router->post('/login', 'UserController@login');
 $router->post('/register','UserController@register');
 $router->get('/rapatDownloadFilePendukung/{idNotulen}/{namaFile}/{extension}', 'TransaksiController@downloadFilePendukung');
