@@ -82,10 +82,18 @@ class CredentialProvider
 
         $defaultChain = [
             'env' => self::env(),
-            'web_identity' => self::assumeRoleWithWebIdentityCredentialProvider(),
-            'ini' => self::ini(),
-            'ini_config' => self::ini('profile default', self::getHomeDir() . '/.aws/config'),
+            'web_identity' => self::assumeRoleWithWebIdentityCredentialProvider($config),
         ];
+        if (
+            !isset($config['use_aws_shared_config_files'])
+            || $config['use_aws_shared_config_files'] !== false
+        ) {
+            $defaultChain['ini'] = self::ini();
+            $defaultChain['ini_config'] = self::ini(
+                'profile default',
+                self::getHomeDir() . '/.aws/config'
+            );
+        }
 
         if (!empty(getenv(EcsCredentialProvider::ENV_URI))) {
             $defaultChain['ecs'] = self::ecsCredentials($config);
@@ -107,7 +115,7 @@ class CredentialProvider
                         $config['credentials'],
                         'aws_cached_' . $provider . '_credentials'
                     );
-                };
+                }
             }
         }
 
@@ -214,8 +222,6 @@ class CredentialProvider
      * Wraps a credential provider and saves provided credentials in an
      * instance of Aws\CacheInterface. Forwards calls when no credentials found
      * in cache and updates cache with the results.
-     *
-     * Defaults to using a simple file-based cache when none provided.
      *
      * @param callable $provider Credentials provider function to wrap
      * @param CacheInterface $cache Cache to store credentials
@@ -334,6 +340,9 @@ class CredentialProvider
             $stsClient = isset($config['stsClient'])
                 ? $config['stsClient']
                 : null;
+            $region = isset($config['region'])
+                ? $config['region']
+                : null;
 
             if ($tokenFromEnv && $arnFromEnv) {
                 $sessionName = getenv(self::ENV_ROLE_SESSION_NAME)
@@ -343,7 +352,8 @@ class CredentialProvider
                     'RoleArn' => $arnFromEnv,
                     'WebIdentityTokenFile' => $tokenFromEnv,
                     'SessionName' => $sessionName,
-                    'client' => $stsClient
+                    'client' => $stsClient,
+                    'region' => $region
                 ]);
 
                 return $provider();
@@ -358,6 +368,9 @@ class CredentialProvider
 
             if (isset($profiles[$profileName])) {
                 $profile = $profiles[$profileName];
+                if (isset($profile['region'])) {
+                    $region = $profile['region'];
+                }
                 if (isset($profile['web_identity_token_file'])
                     && isset($profile['role_arn'])
                 ) {
@@ -368,7 +381,8 @@ class CredentialProvider
                         'RoleArn' => $profile['role_arn'],
                         'WebIdentityTokenFile' => $profile['web_identity_token_file'],
                         'SessionName' => $sessionName,
-                        'client' => $stsClient
+                        'client' => $stsClient,
+                        'region' => $region
                     ]);
 
                     return $provider();
@@ -537,8 +551,9 @@ class CredentialProvider
                 if ($expiration < $now) {
                     return self::reject("credential_process returned expired credentials");
                 }
+                $expires = $expiration->getTimestamp();
             } else {
-                $processData['Expiration'] = null;
+                $expires = null;
             }
 
             if (empty($processData['SessionToken'])) {
@@ -550,7 +565,7 @@ class CredentialProvider
                     $processData['AccessKeyId'],
                     $processData['SecretAccessKey'],
                     $processData['SessionToken'],
-                    $processData['Expiration']
+                    $expires
                 )
             );
         };
