@@ -100,9 +100,10 @@ class TransaksiController extends Controller
             }
             else{
                 $rapat = Transaksi::orderBy('id', 'DESC')
-                // ->join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
-                // ->join('master_skpd', 'master_skpd.kode_skpd', "=", "transaksi.opd_peminjam")
-                // ->select('transaksi.id','transaksi.id_notulen', 'transaksi.judul_rapat', 'transaksi.status', 'start', 'finish', 'ruang_rapat.nama', 'transaksi.start', 'transaksi.finish','master_skpd.nama_skpd')
+                // AFTER FIX : sebelumnya join dan select di comment
+                ->join('ruang_rapat', 'transaksi.id_lokasi', '=', 'ruang_rapat.id')
+                ->join('master_skpd', 'master_skpd.kode_skpd', "=", "transaksi.opd_peminjam")
+                ->select('transaksi.id', 'transaksi.nip_pemesan', 'transaksi.id_notulen', 'transaksi.judul_rapat', 'transaksi.status', 'start', 'finish', 'ruang_rapat.nama', 'transaksi.start', 'transaksi.finish','master_skpd.nama_skpd')
                 ->get();
 
                  return response()->json(['rapat'=>$rapat]);
