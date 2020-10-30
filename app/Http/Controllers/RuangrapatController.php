@@ -73,42 +73,44 @@ class RuangrapatController extends Controller
             if(isset($user['message'])){
                 return response()->json(['message' => $user['message']], $user['code']);
             }
+            
             else{
-                $detailRuangan = $request->get('detailRuangan');
+                $detailRuangan =  json_decode($request->get('detailRuangan'));
                 $ruangRapat = new Ruang_Rapat();
-                $ruangRapat->nama = $detailRuangan['nama'];
-                $ruangRapat->lokasi = $detailRuangan['lokasi'];
-                if ($detailRuangan['opd'] != '') {
-                    $ruangRapat->opd = $detailRuangan['opd'];
+                $ruangRapat->nama = $detailRuangan->nama;
+                $ruangRapat->lokasi = $detailRuangan->lokasi;
+                if ($detailRuangan->opd != '') {
+                    $ruangRapat->opd = $detailRuangan->opd;
                 } else {
                     $ruangRapat->opd = $ruangRapat->opd;
                 }
-                $ruangRapat->kapasitas = $detailRuangan['kapasitas'];
-                $ruangRapat->keterangan = $detailRuangan['keterangan'];
-                $ruangRapat->koor_x = $detailRuangan['koorX'];
-                $ruangRapat->koor_y = $detailRuangan['koorY'];
-                $ruangRapat->contact = $detailRuangan['contact'];
+                $ruangRapat->kapasitas = $detailRuangan->kapasitas;
+                $ruangRapat->keterangan = $detailRuangan->keterangan;
+                $ruangRapat->koor_x = $detailRuangan->koorX;
+                $ruangRapat->koor_y = $detailRuangan->koorY;
+                $ruangRapat->contact = $detailRuangan->contact;
                 $ruangRapat->save();
 
 
-                $fasilitasRuangan = $request->get('fasilitasRuangan');
+                $fasilitasRuangan = json_decode($request->get('fasilitasRuangan'));
                 $fasilitasRapat = new Fasilitas();
                 $fasilitasRapat->id_ruangrapat = $ruangRapat->id;
-                $fasilitasRapat->meja_pimpinan = $fasilitasRuangan['mejaPimpinan'];
-                $fasilitasRapat->podium = $fasilitasRuangan['podium'];
-                $fasilitasRapat->ruang_transit= $fasilitasRuangan['ruangTransit'];
-                $fasilitasRapat->ruang_makan = $fasilitasRuangan['ruangMakan'];
-                $fasilitasRapat->meja_peserta = $fasilitasRuangan['mejaPeserta'];
-                $fasilitasRapat->kursi_peserta = $fasilitasRuangan['kursiPeserta'];
-                $fasilitasRapat->papan_tulis = $fasilitasRuangan['papanTulis'];
-                $fasilitasRapat->ac = $fasilitasRuangan['ac'];
-                $fasilitasRapat->lcd_tv = $fasilitasRuangan['lcdTv'];
-                $fasilitasRapat->projektor = $fasilitasRuangan['projector'];
-                $fasilitasRapat->microphone = $fasilitasRuangan['microphone'];
+                $fasilitasRapat->meja_pimpinan = $fasilitasRuangan->mejaPimpinan;
+                $fasilitasRapat->podium = $fasilitasRuangan->podium;
+                $fasilitasRapat->ruang_transit= $fasilitasRuangan->ruangTransit;
+                $fasilitasRapat->ruang_makan = $fasilitasRuangan->ruangMakan;
+                $fasilitasRapat->meja_peserta = $fasilitasRuangan->mejaPeserta;
+                $fasilitasRapat->kursi_peserta = $fasilitasRuangan->kursiPeserta;
+                $fasilitasRapat->papan_tulis = $fasilitasRuangan->papanTulis;
+                $fasilitasRapat->ac = $fasilitasRuangan->ac;
+                $fasilitasRapat->lcd_tv = $fasilitasRuangan->lcdTv;
+                $fasilitasRapat->projektor = $fasilitasRuangan->projektor;
+                $fasilitasRapat->microphone = $fasilitasRuangan->microphone;
 
                 $fasilitasRapat->save();
                 
                  return response()->json($detailRuangan);
+                
                  
             }
         } catch (\Exception $ex) {
