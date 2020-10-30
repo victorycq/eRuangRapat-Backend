@@ -20,7 +20,7 @@ class CorsMiddleware
             'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
             'Access-Control-Allow-Credentials' => 'true',
             'Access-Control-Max-Age'           => '86400',
-            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+            'Access-Control-Allow-Headers'     => 'Content-Type, Accept, Authorization, X-Requested-With, Application'
         ];
 
         if ($request->isMethod('OPTIONS'))
@@ -29,13 +29,10 @@ class CorsMiddleware
         }
 
         $response = $next($request);
-        $response->headers->set('Access-Control-Allow-Origin' , '*');
-        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
-        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With, Application');
-        // foreach($headers as $key => $value)
-        // {
-        //     $response->header->set($key, $value);
-        // }
+        foreach($headers as $key => $value)
+        {
+            $response->header->set($key, $value);
+        }
 
         return $response;
     }
